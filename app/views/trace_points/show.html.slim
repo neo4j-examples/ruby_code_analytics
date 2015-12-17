@@ -25,6 +25,22 @@ hr
   .four.wide.column
     = render partial: 'shared/object_attribute_grid', locals: {object: @trace_point}
 
+    - if @trace_point.arguments.present?
+      h2 Arguments
+      - @trace_point.arguments(:arg, :rel).pluck(:arg, :rel).each do |argument, rel|
+        .ui.grid
+          .eight.wide.column
+            strong Name
+          .eight.wide.column = rel.argument_name
+        = render partial: 'shared/object_attribute_grid', locals: {object: argument}
+        - if argument.ruby_class
+          .ui.grid
+            .eight.wide.column
+              strong Class
+            .eight.wide.column = @trace_point.ruby_object.ruby_class.ruby_inspect
+        hr
+ 
+
     - if @trace_point.return_value
       h2 Return Value
       = render partial: 'shared/object_attribute_grid', locals: {object: @trace_point.return_value}

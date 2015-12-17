@@ -19,6 +19,7 @@ class TracePointEntry
   has_one :out, :ast_node, type: :HAS_AST_NODE, model_class: :ASTNode
 
   has_one :out, :return_value, type: :RETURNED, model_class: :RubyObject
+  has_many :out, :arguments, rel_class: :ReceivedArgument
   has_one :out, :ruby_object, type: :FROM_OBJECT
 
   def description
