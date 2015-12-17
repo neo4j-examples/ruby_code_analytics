@@ -1,0 +1,5 @@
+h1 Root AST nodes
+
+ul.ui.list
+  - @root_nodes.sort_by(&:file_path).each do |node|
+    li = link_to "#{node.file_path} (#{node.description})", node_path(node)

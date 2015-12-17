@@ -1,0 +1,9 @@
+h1 First Trace Point
+
+table.ui.celled.table
+  tr
+    th Event
+    th Location
+    th Class
+    th Method
+  = render partial: 'trace_points/trace_point_row', locals: {trace_point: @first_trace_point}

@@ -1,0 +1,9 @@
+tr
+  td = link_to 'Show', trace_point_path(trace_point)
+  td = trace_point.event
+  td
+    = trace_point.path 
+    | :
+    = trace_point.lineno 
+  td = trace_point.defined_class
+  td = trace_point.method_id

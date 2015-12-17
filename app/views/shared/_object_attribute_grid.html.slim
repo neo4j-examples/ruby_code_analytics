@@ -1,0 +1,7 @@
+- if !defined?(columns)
+  - columns = object.attributes.keys 
+.ui.grid
+  - columns.each do |key|
+    .eight.wide.column
+      strong = key
+    .eight.wide.column = object.attributes[key.to_s]

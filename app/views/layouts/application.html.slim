@@ -1,0 +1,19 @@
+doctype html
+html
+head
+  title RubyCodeAnalytics
+  = stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track' => true
+  = javascript_include_tag 'application', 'data-turbolinks-track' => true
+  = csrf_meta_tags
+
+body
+
+.ui.pointing.menu
+  a.item href="/" Home
+  a.item href="#{methods_path}" Methods
+  a.item href="#{objects_path}" Objects
+  a.item href="#{nodes_path}" AST Nodes
+
+.ui.container
+  = yield
+

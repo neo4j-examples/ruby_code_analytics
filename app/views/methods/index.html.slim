@@ -1,0 +1,10 @@
+table.ui.table
+  tr
+    th &nbsp;
+    th Class
+    th Method
+  - @classes_and_methods.sort.each do |defined_class, method_id|
+    tr
+      td = link_to 'Show', method_path(defined_class: defined_class, method_id: method_id)
+      td = defined_class
+      td = method_id

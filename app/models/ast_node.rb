@@ -1,6 +1,5 @@
-require './file'
-
 class ASTNode
+
   include Neo4j::ActiveNode
 
   property :type, type: String, index: :exact
@@ -22,13 +21,28 @@ class ASTNode
   property :dot, type: String
   property :selector, type: String
   property :else, type: String
-  property :in, type: String
   property :begin, type: String
   property :end, type: String
 
   has_one :out, :parent, type: :HAS_PARENT, model_class: :ASTNode
 
-  has_one :out, :file, type: :FROM_FILE, model_class: :RubyFile
+  has_many :in, :children, type: :HAS_PARENT, model_class: :ASTNode
+
+  has_one :out, :from_file, type: :FROM_FILE, model_class: :RubyFile
+
+  def description
+    [type, keyword, name, selector].uniq.compact.join(' ')
+  end
+
+  def file
+    RubyFile.find_by(file_path: file_path) if file_path
+  end
+
+  def self.find_method(class_name, method_name)
+    where(type: 'class', name: class_name)
+      .children(rel_length: 1..5)
+      .where(type: 'def', name: method_name).first
+  end
 end
 
 

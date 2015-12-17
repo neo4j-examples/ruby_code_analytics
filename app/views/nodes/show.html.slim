@@ -1,0 +1,27 @@
+h1 AST Node Details
+
+
+.ui.grid
+  .eight.wide.column
+    h2 Parent
+    - if @node.parent
+      = link_to @node.parent.description, node_path(@node.parent)
+    - else
+      | None
+
+  .eight.wide.column
+    h2 Children
+    ul.ui.list
+      - @node.children.order(:first_line).each do |child|
+        li = link_to child.description, node_path(child)
+
+.ui.grid
+  .ten.wide.column
+    h3 = @node.file_path
+    pre.line-numbers data-line="#{@node.first_line}-#{@node.last_line}"
+      code.language-ruby
+        = @node.file.content
+
+  .six.wide.column
+    h2 Attributes
+    = render partial: 'shared/object_attribute_grid', locals: {object: @node, columns: %w(type selector name keyword argument expression loc_class)}

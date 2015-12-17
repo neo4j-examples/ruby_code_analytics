@@ -1,5 +1,3 @@
-require './file'
-
 class TracePointEntry
   include Neo4j::ActiveNode
 
@@ -22,6 +20,23 @@ class TracePointEntry
 
   has_one :out, :return_value, type: :RETURNED, model_class: :RubyObject
   has_one :out, :ruby_object, type: :FROM_OBJECT
+
+  def description
+    line_description = if path.present?
+      "#{File.basename(path)}:#{lineno}"
+    else
+      "(line #{lineno})"
+    end
+    "#{event} #{defined_class}##{method_id} #{line_description}"
+  end
+
+  def file
+    RubyFile.find_by(file_path: path) if path
+  end
+
+  def line_range
+    lineno
+  end
 end
 
 

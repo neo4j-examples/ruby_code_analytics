@@ -1,0 +1,15 @@
+h1 Object Details
+
+= render partial: 'shared/object_attribute_grid', locals: {object: @object}
+
+h2 Trace points where this object has been returned
+
+ul.ui.list
+  - @object.return_trace_points.each do |trace_point|
+    li = link_to_trace_point trace_point
+
+h2 Trace points which were in the context of this object
+
+ul.ui.list
+  - @object.object_trace_points.each do |trace_point|
+    li = link_to_trace_point trace_point

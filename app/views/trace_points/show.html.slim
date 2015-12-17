@@ -1,0 +1,46 @@
+.ui.grid
+  .four.wide.column
+    h2 Previous
+    = link_to_trace_point(@trace_point.previous)
+  .four.wide.column
+    h2 Next
+    = link_to_trace_point(@trace_point.next)
+  .four.wide.column
+    h2 Parent
+    = link_to_trace_point(@trace_point.parent)
+  .four.wide.column
+    h2 Children
+    - @trace_point.children.sort_by(&:execution_index).each do |child|
+      ul.ui.list
+        li = link_to_trace_point(child)
+
+hr
+
+.ui.grid
+  .twelve.wide.column
+    - if @trace_point.file
+      pre.line-numbers data-line="#{@trace_point.line_range}"
+        code.language-ruby
+          = @trace_point.file.content
+  .four.wide.column
+    = render partial: 'shared/object_attribute_grid', locals: {object: @trace_point}
+
+    - if @trace_point.return_value
+      h2 Return Value
+      = render partial: 'shared/object_attribute_grid', locals: {object: @trace_point.return_value}
+      - if @trace_point.return_value.ruby_class
+        .ui.grid
+          .eight.wide.column
+            strong Class
+          .eight.wide.column = @trace_point.return_value.ruby_class.ruby_inspect
+
+    - if @trace_point.ruby_object
+      h2 Ruby Object
+      = render partial: 'shared/object_attribute_grid', locals: {object: @trace_point.ruby_object}
+      - if @trace_point.ruby_object.ruby_class
+        .ui.grid
+          .eight.wide.column
+            strong Class
+          .eight.wide.column = @trace_point.ruby_object.ruby_class.ruby_inspect
+
+

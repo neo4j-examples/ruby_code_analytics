@@ -14,3 +14,9 @@ MATCH (tp:TracePoint)-[:RETURNED]->(o:Object)-[:IS_A]-(class:Object)-[:HAS_SUPER
 WHERE tp.event IN ['return', 'c_return']
 RETURN tp.path, tp.lineno, tp.defined_class, tp.method_id, o.ruby_inspect, class.ruby_inspect
 ORDER BY tp.execution_index
+
+// All args / vars / etc... in a class
+MATCH (:ASTNode {name: 'Numeric', type: 'class'})<-[:HAS_PARENT*]-(n:ASTNode)
+WHERE n.type IN ['def', 'arg', 'optarg', 'restarg', 'lvar', 'const', 'sym']
+RETURN n.type, n.expression, n.name
+ORDER BY n.type

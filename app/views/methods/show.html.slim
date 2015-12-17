@@ -1,0 +1,10 @@
+h1 Trace Points
+
+ul.ui.list
+  - @trace_points.each do |trace_point|
+    li = link_to_trace_point(trace_point)
+
+- ast_node = ASTNode.find_method(@defined_class, @method_id)
+- if ast_node
+  h2 AST Node
+  = link_to ast_node.description, node_path(ast_node)

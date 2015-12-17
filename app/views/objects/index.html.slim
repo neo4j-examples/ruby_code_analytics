@@ -1,0 +1,18 @@
+- grouped_data = @object_data.group_by(&:third)
+
+.ui.horizontal.bulleted.link.list
+  - grouped_data.keys.each do |class_name|
+    a.item href="##{class_name && class_name.tableize}" = class_name
+
+- grouped_data.each do |class_name, class_object_data|
+  a name="#{class_name && class_name.tableize}"
+  h1 = class_name ? class_name : 'Unknown Class'
+  table.ui.table
+    tr
+      th Object ID
+      th Inspect
+    - class_object_data.each do |ruby_object_id, ruby_inspect, _|
+      tr
+        td = link_to ruby_object_id, object_path(ruby_object_id)
+        td = ruby_inspect
+

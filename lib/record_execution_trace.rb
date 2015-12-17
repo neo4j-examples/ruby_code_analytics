@@ -1,6 +1,3 @@
-require './trace_point_entry'
-require './ruby_object'
-require './received_argument'
 require 'pathname'
 
 CYAN = "\e[36m"
@@ -33,13 +30,14 @@ def record_execution_trace(levels = 4)
       indent += 1 if [:call, :c_call].include?(tp.event)
     end
 
-    if tp.event != :line
-      attributes = %i(event lineno defined_class method_id).each_with_object({}) do |method, attributes|
+    if tp.event# != :line
+      attributes = %i(event defined_class method_id).each_with_object({}) do |method, attributes|
         attributes[method] = tp.send(method)
       end
-      unless [:c_call, :c_return].include?(tp.event)
+      #unless [:c_call, :c_return].include?(tp.event)
+        attributes[:lineno] = tp.lineno
         attributes[:path] = Pathname.new(tp.path).realpath.to_s
-      end
+      #end
 
       attributes[:return_value] = RubyObject.from_object(tp.return_value) if [:return, :c_return].include?(tp.event)
       attributes[:ruby_object] = RubyObject.from_object(tp.self) unless tp == tp.self

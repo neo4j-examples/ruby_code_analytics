@@ -1,4 +1,3 @@
-require './ast_node'
 
 def extract_code_range(code, rangy_obj)
   code[rangy_obj.begin_pos..rangy_obj.end_pos - 1] if rangy_obj
