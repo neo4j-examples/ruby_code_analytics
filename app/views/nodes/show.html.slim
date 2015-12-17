@@ -14,7 +14,7 @@ h1 AST Node Details
     ul.ui.list
       - @node.children.order(:first_line).each do |child|
         li = link_to child.description, node_path(child)
-hr        
+hr
 
 .ui.grid
   .eight.wide.column
@@ -23,6 +23,8 @@ hr
     ul.ui.list
       - @node.trace_points.order(:execution_index).each do |trace_point|
         li = link_to_trace_point trace_point
+
+hr
 
 .ui.grid
   .ten.wide.column
