@@ -2,6 +2,8 @@ class MethodsController < ApplicationController
   def index
     @classes_and_methods = TracePointEntry.as(:tp).pluck('DISTINCT tp.defined_class, tp.method_id')
     @classes_and_methods.reject! { |pair| pair.any?(&:nil?) }
+
+    @class_ast_nodes = ASTNode.where(type: 'class').index_by(&:name)
   end
 
   def show

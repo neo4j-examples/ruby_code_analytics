@@ -1,10 +1,17 @@
-table.ui.table
-  tr
-    th &nbsp;
-    th Class
-    th Method
-  - @classes_and_methods.sort.each do |defined_class, method_id|
-    tr
-      td = link_to 'Show', method_path(defined_class: defined_class, method_id: method_id)
-      td = defined_class
-      td = method_id
+- grouped_data = @classes_and_methods.sort.group_by(&:first)
+
+.ui.horizontal.bulleted.link.list
+  - grouped_data.keys.each do |class_name|
+    a.item href="##{class_name && class_name.tableize}" = class_name
+
+- grouped_data.each do |class_name, class_data|
+  a name="#{class_name && class_name.tableize}"
+  h2
+    = class_name ? class_name : 'Unknown Class'
+
+    - if class_ast_node = @class_ast_nodes[class_name]
+      |  (#{link_to 'AST Node', node_path(class_ast_node)})
+
+  ul.ui.list
+    - class_data.map(&:second).sort.each do |method_id|
+      li = link_to method_id, method_path(defined_class: class_name, method_id: method_id)
