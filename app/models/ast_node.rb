@@ -30,6 +30,8 @@ class ASTNode
 
   has_one :out, :from_file, type: :FROM_FILE, model_class: :RubyFile
 
+  has_many :in, :trace_points, type: :HAS_AST_NODE
+
   def description
     [type, keyword, name, selector].uniq.compact.join(' ')
   end
