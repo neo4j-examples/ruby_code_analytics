@@ -1,0 +1,13 @@
+h3 = file_path
+pre.line-numbers data-line="#{first_line}-#{last_line}"
+  code.language-ruby
+    = content
+
+- code_block_height = 400
+css:
+  pre {
+    height: #{code_block_height}px;
+    border: 1px solid #AAA;
+  }
+javascript:
+  $('pre')[0].scrollTop = 15 + (#{first_line - 3} * 21)

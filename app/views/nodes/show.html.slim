@@ -28,10 +28,7 @@ hr
 
 .ui.grid
   .ten.wide.column
-    h3 = @node.file_path
-    pre.line-numbers data-line="#{@node.first_line}-#{@node.last_line}"
-      code.language-ruby
-        = @node.file.content
+    = render partial: 'shared/code_block', locals: {file_path: @node.file_path, content: @node.file.content, first_line: @node.first_line, last_line: @node.last_line}
 
   .six.wide.column
     h2 Attributes

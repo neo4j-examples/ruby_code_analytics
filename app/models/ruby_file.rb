@@ -5,5 +5,9 @@ class RubyFile
 
   property :file_path, type: String, constraint: :unique
   property :content, type: String
+
+  def line_count
+    content.split(/[\r?\n?]/).size
+  end
 end
 
