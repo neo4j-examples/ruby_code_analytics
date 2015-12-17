@@ -1,18 +1,24 @@
 .ui.grid
-  .four.wide.column
+  .eight.wide.column
     h2 Previous
     = link_to_trace_point(@trace_point.previous)
-  .four.wide.column
-    h2 Next
-    = link_to_trace_point(@trace_point.next)
-  .four.wide.column
+  .eight.wide.column
     h2 Parent
     = link_to_trace_point(@trace_point.parent)
-  .four.wide.column
+  .eight.wide.column
+    h2 Next
+    = link_to_trace_point(@trace_point.next)
+  .eight.wide.column
     h2 Children
     - @trace_point.children.sort_by(&:execution_index).each do |child|
       ul.ui.list
         li = link_to_trace_point(child)
+hr
+.ui.grid
+  - if @trace_point.ast_node
+    .eight.wide.column
+      h2 AST Node
+    .eight.wide.column = link_to @trace_point.ast_node.description, node_path(@trace_point.ast_node)
 
 hr
 
