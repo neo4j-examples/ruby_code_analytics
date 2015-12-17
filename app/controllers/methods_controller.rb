@@ -10,5 +10,6 @@ class MethodsController < ApplicationController
     @defined_class = params[:defined_class]
     @method_id = params[:method_id]
     @trace_points = TracePointEntry.where(defined_class: @defined_class, method_id: @method_id)
+                     .order(:execution_index)
   end
 end
