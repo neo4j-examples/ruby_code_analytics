@@ -10,8 +10,6 @@ RubyFile.delete_all
 
 
 record_execution do
-  bee = 'buzz'
-
   def add_random(i, max = 50)
     i + rand(max)
   end
@@ -34,18 +32,12 @@ record_execution do
     end
   end
 
-  lamb = lambda { 1 + 2 }
-
-  puts add_random(rand(10))
-
   begin
     raise "Test error"
   rescue => e
     puts e.message
   end
 
-  puts Foo.class_bar
-
-  add_random(4).to_param
+  Foo.class_bar
   Foo.new.bar
 end

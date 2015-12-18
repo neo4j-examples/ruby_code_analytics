@@ -13,6 +13,7 @@ class RubyObject
 
   has_many :in, :return_trace_points, type: :RETURNED, model_class: :TracePointEntry
   has_many :in, :object_trace_points, type: :FROM_OBJECT, model_class: :TracePointEntry
+  has_many :in, :reference_trace_points, rel_class: :HasVariableValue
 
   def self.from_object(object)
     attributes = {

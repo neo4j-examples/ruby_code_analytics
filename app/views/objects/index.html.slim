@@ -14,5 +14,6 @@
     - class_object_data.each do |ruby_object_id, ruby_inspect, _|
       tr
         td = link_to ruby_object_id, object_path(ruby_object_id)
-        td = ruby_inspect
+        td
+          pre style="white-space: pre-wrap" = ruby_inspect[0,500]
 

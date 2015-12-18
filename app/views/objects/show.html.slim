@@ -10,6 +10,15 @@ h1
   - instances.sort_by(&:ruby_inspect).each do |instance|
     li = link_to_object instance
 
+h2 Trace points where this object is referenced
+
+table.ui.table
+  - @object.reference_trace_points.order(:execution_index).each do |trace_point|
+    tr
+      td = link_to 'View', trace_point_path(trace_point)
+      td = trace_point.event
+      td = trace_point.class_and_method
+      td = trace_point.line_description
 
 h2 Trace points where this object has been returned
 
