@@ -9,6 +9,7 @@ class TracePointEntry
   property :defined_class, type: String
   property :method_id, type: String
   property :execution_index, type: Integer
+  property :execution_time, type: Integer # microseconds
 
   has_one :in, :previous, type: :NEXT, model_class: :TracePoint
   has_one :out, :next, type: :NEXT, model_class: :TracePoint

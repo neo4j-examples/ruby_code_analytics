@@ -37,77 +37,89 @@ def extract_variables(ast_node)
   end
 end
 
-def record_execution_trace(levels = 4)
+def record_received_arguments(tp, tracepoint_db_entry)
+  method = tp.self.method(tp.method_id)
+  parameter_names = method.parameters.map {|_, name| name }
+  arguments = parameter_names.each_with_object({}) do |name, arguments|
+    arguments[name] = tp.binding.local_variable_get(name)
+  end
+  arguments.each do |name, object|
+    argument_value = RubyObject.from_object(object)
+    ReceivedArgument.create(tracepoint_db_entry, argument_value, argument_name: name)
+  end
+end
 
-  execution_index = 1
+def record_referenced_variables(tp, tracepoint_db_entry)
+  line = get_file_line(tp.path, tp.lineno)
+  root = Parser::CurrentRuby.parse(line)
+  extract_variables(root).each do |variable|
+    begin
+      value = tp.binding.local_variable_get(variable)
+    rescue NameError
+      nil
+    end
+    object_entry = RubyObject.from_object(value)
+    HasVariableValue.create(tracepoint_db_entry, object_entry, variable_name: variable)
+  end
+rescue Parser::SyntaxError
+  nil
+end
+
+def record_execution_trace(levels = 4)
+  execution_index = 0
   indent = 0
   output = ''
   last_tracepoint_db_entry = nil
+  last_start_time = nil
   ancestor_stack = []
+  run_time_stack = []
+
+  last_tracepoint_end_time = nil
+  last_run_time = nil
+
   trace = TracePoint.new do |tp|
+    last_run_time = 1_000_000.0 * (Time.now - last_tracepoint_end_time) if last_tracepoint_end_time
+    puts 'last_run_time', last_run_time.inspect
+
     output << tracepoint_string(tp, indent)
 
+    last_method_time = nil
+    if [:call, :c_call].include?(tp.event)
+      run_time_stack.push(0)
+    elsif [:return, :c_return].include?(tp.event)
+      last_method_time = run_time_stack.pop
+    else
+      run_time_stack[-1] += last_run_time if run_time_stack[-1] && last_run_time
+    end
 
     if [:return, :c_return].include?(tp.event) && indent.nonzero?
       indent -= 1
       ancestor_stack.pop
-    else
-      if [:call, :c_call].include?(tp.event)
-        indent += 1
-      end
+    elsif [:call, :c_call].include?(tp.event)
+      indent += 1
     end
 
-    if tp.event# != :line
-      attributes = %i(event defined_class method_id).each_with_object({}) do |method, attributes|
-        attributes[method] = tp.send(method)
-      end
-      #unless [:c_call, :c_return].include?(tp.event)
-        attributes[:lineno] = tp.lineno
-        attributes[:path] = Pathname.new(tp.path).realpath.to_s
-      #end
-
-      attributes[:return_value] = RubyObject.from_object(tp.return_value) if [:return, :c_return].include?(tp.event)
-      attributes[:ruby_object] = RubyObject.from_object(tp.self) unless tp == tp.self
-
-      attributes[:execution_index] = execution_index
-      execution_index += 1
-
-      last_tracepoint_db_entry = TracePointEntry.create(attributes.merge(previous: last_tracepoint_db_entry, parent: ancestor_stack.last))
-
-      if tp.event == :line
-        begin
-          line = get_file_line(tp.path, tp.lineno)
-          root = Parser::CurrentRuby.parse(line)
-          extract_variables(root).each do |variable|
-            begin
-              value = tp.binding.local_variable_get(variable)
-            rescue NameError
-              nil
-            end
-            object_entry = RubyObject.from_object(value)
-            HasVariableValue.create(last_tracepoint_db_entry, object_entry, variable_name: variable)
-          end
-        rescue Parser::SyntaxError
-          nil
-        end
-      end
-
-      if tp.event == :call
-        method = tp.self.method(tp.method_id)
-        parameter_names = method.parameters.map {|_, name| name }
-        arguments = parameter_names.each_with_object({}) do |name, arguments|
-          arguments[name] = tp.binding.local_variable_get(name)
-        end
-        arguments.each do |name, object|
-          argument_value = RubyObject.from_object(object)
-          ReceivedArgument.create(last_tracepoint_db_entry, argument_value, argument_name: name)
-        end
-      end
+    attributes = %i(event lineno defined_class method_id).each_with_object({}) do |method, attributes|
+      attributes[method] = tp.send(method)
     end
+    
+    attributes[:execution_time] = last_method_time.round if last_method_time
+    attributes[:execution_index] = (execution_index += 1)
+
+    attributes[:path] = Pathname.new(tp.path).realpath.to_s
+    attributes[:return_value] = RubyObject.from_object(tp.return_value) if [:return, :c_return].include?(tp.event)
+    attributes[:ruby_object] = RubyObject.from_object(tp.self) unless tp == tp.self
+    
+    last_tracepoint_db_entry = TracePointEntry.create(attributes.merge(previous: last_tracepoint_db_entry, parent: ancestor_stack.last))
+
+    record_referenced_variables(tp, last_tracepoint_db_entry) if tp.event == :line
+    record_received_arguments(tp, last_tracepoint_db_entry) if tp.event == :call
 
     if [:call, :c_call].include?(tp.event)
       ancestor_stack.push(last_tracepoint_db_entry)
-    end    
+    end
+
+    last_tracepoint_end_time = Time.now
   end
 
   trace.enable
