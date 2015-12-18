@@ -1,6 +1,6 @@
 - if line_definition && first_line
   h3 = file_path
-  pre.line-numbers data-line="#{line_definition}"
+  pre#code-block.line-numbers data-line="#{line_definition}" data-first-line="#{first_line}"
     code.language-ruby
       = content
 
@@ -10,6 +10,3 @@
       height: #{code_block_height}px;
       border: 1px solid #AAA;
     }
-  javascript:
-    console.log({scrollTop: 15 + (#{first_line - 3} * 21)});
-    $('pre')[0].scrollTop = 15 + (#{first_line - 3} * 21);
