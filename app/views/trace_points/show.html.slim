@@ -36,8 +36,10 @@ hr
           .eight.wide.column
             strong = rel.argument_name
           .eight.wide.column
-            = link_to_object argument
-            |  (#{link_to_object argument.ruby_class})
+            - if argument
+              = link_to_object argument
+              - if argument.ruby_class
+                |  (#{link_to_object argument.ruby_class})
 
     hr
  
@@ -53,7 +55,9 @@ hr
 
     - if ruby_object = @trace_point.ruby_object
       h2 Ruby Object
-      = link_to_object ruby_object
-      |  (#{link_to_object ruby_object.ruby_class})
+      - if ruby_object
+        = link_to_object ruby_object
+        - if ruby_object.ruby_class
+          |  (#{link_to_object ruby_object.ruby_class})
 
 

@@ -25,7 +25,13 @@ record_execution do
     def self.class_bar
       a = 'fizz'
 
-      a + 'buzz'
+      a + Fizz.buzz + add_random(4).to_s
+    end
+  end
+
+  class Fizz
+    def self.buzz
+      'buzz'
     end
   end
 
@@ -38,6 +44,8 @@ record_execution do
   rescue => e
     puts e.message
   end
+
+  puts Foo.class_bar
 
   add_random(4).to_param
   Foo.new.bar

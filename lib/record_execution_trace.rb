@@ -27,7 +27,9 @@ def record_execution_trace(levels = 4)
       indent -= 1
       ancestor_stack.pop
     else
-      indent += 1 if [:call, :c_call].include?(tp.event)
+      if [:call, :c_call].include?(tp.event)
+        indent += 1
+      end
     end
 
     if tp.event# != :line
@@ -58,10 +60,11 @@ def record_execution_trace(levels = 4)
           ReceivedArgument.create(last_tracepoint_db_entry, argument_value, argument_name: name)
         end
       end
-
-      ancestor_stack.push(last_tracepoint_db_entry)
     end
 
+    if [:call, :c_call].include?(tp.event)
+      ancestor_stack.push(last_tracepoint_db_entry)
+    end    
   end
 
   trace.enable
