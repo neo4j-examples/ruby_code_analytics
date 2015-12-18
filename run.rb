@@ -1,14 +1,16 @@
 require 'pathname'
-
 require 'record_execution'
 
-
+puts 'Deleting ASTNodes from the database...'
 ASTNode.delete_all
+puts 'Deleting TracePointEntries from the database...'
 TracePointEntry.delete_all
+puts 'Deleting RubyObjects from the database...'
 RubyObject.delete_all
+puts 'Deleting RubyFiles from the database...'
 RubyFile.delete_all
 
-
+puts 'Recording execution...'
 record_execution do
   def add_random(i, max = 50)
     i + rand(max)
