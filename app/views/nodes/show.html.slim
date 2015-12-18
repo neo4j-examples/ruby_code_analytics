@@ -28,7 +28,7 @@ hr
 
 .ui.grid
   .ten.wide.column
-    = render partial: 'shared/code_block', locals: {file_path: @node.file_path, content: @node.file.content, first_line: @node.first_line, last_line: @node.last_line}
+    = render partial: 'shared/code_block', locals: {file_path: @node.file_path, content: @node.file.content, line_definition: "#{@node.first_line}-#{@node.last_line}", first_line: @node.first_line}
 
   .six.wide.column
     h2 Attributes

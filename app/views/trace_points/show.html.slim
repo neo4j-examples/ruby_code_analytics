@@ -25,9 +25,7 @@ hr
 .ui.grid
   .twelve.wide.column
     - if @trace_point.file
-      pre.line-numbers data-line="#{@trace_point.line_range}"
-        code.language-ruby
-          = @trace_point.file.content
+      = render partial: 'shared/code_block', locals: {file_path: @trace_point.path, content: @trace_point.file.content, line_definition: @trace_point.lineno, first_line: @trace_point.lineno}
   .four.wide.column
     = render partial: 'shared/object_attribute_grid', locals: {object: @trace_point}
 

@@ -34,10 +34,6 @@ class TracePointEntry
   def file
     RubyFile.find_by(file_path: path) if path
   end
-
-  def line_range
-    lineno
-  end
 end
 
 
