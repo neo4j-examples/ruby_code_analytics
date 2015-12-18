@@ -22,6 +22,8 @@ class TracePointEntry
   has_many :out, :arguments, rel_class: :ReceivedArgument
   has_one :out, :ruby_object, type: :FROM_OBJECT
 
+  has_many :out, :variable_values, rel_class: :HasVariableValue
+
   def description
     "#{event} #{class_and_method} #{line_description}"
   end

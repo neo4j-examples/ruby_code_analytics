@@ -1,5 +1,6 @@
 require 'record_execution_trace'
 require 'process_ast_node'
+require 'parser/current'
 
 def record_execution(&block)
   record_execution_trace(10) do

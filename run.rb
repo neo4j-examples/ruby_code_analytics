@@ -1,4 +1,3 @@
-require 'parser/current'
 require 'pathname'
 
 require 'record_execution'

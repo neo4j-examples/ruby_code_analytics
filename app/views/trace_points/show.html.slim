@@ -32,16 +32,29 @@ hr
     - if @trace_point.arguments.present?
       h2 Arguments
       .ui.grid
-        - @trace_point.arguments(:arg, :rel).pluck(:arg, :rel).each do |argument, rel|
+        - @trace_point.arguments(:obj, :rel).pluck(:obj, :rel).each do |object, rel|
           .eight.wide.column
             strong = rel.argument_name
           .eight.wide.column
-            - if argument
-              = link_to_object argument
-              - if argument.ruby_class
-                |  (#{link_to_object argument.ruby_class})
+            - if object
+              = link_to_object object
+              - if object.ruby_class
+                |  (#{link_to_object object.ruby_class})
 
-    hr
+      hr
+
+    - if @trace_point.variable_values.present?
+      h2 Variable values
+      .ui.grid
+        - @trace_point.variable_values(:obj, :rel).pluck(:obj, :rel).each do |object, rel|
+          .eight.wide.column
+            strong = rel.variable_name
+          .eight.wide.column
+            - if object
+              = link_to_object object
+              - if object.ruby_class
+                |  (#{link_to_object object.ruby_class})
+      hr
  
 
     - if @trace_point.return_value

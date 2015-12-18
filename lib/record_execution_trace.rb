@@ -1,4 +1,5 @@
 require 'pathname'
+require 'parser/current'
 
 CYAN = "\e[36m"
 CLEAR = "\e[0m"
@@ -10,6 +11,30 @@ def tracepoint_string(tp, indent)
   parts << "#{CYAN if tp.event == :call}%-8s#{CLEAR}"
   parts << "%s:%-4d %-18s\n"
   parts.join(' ') % [tp.event, tp.path, tp.lineno, tp.defined_class.to_s + '#' + GREEN + tp.method_id.to_s + CLEAR]
+end
+
+FILE_LINES = {}
+
+def get_file_line(path, lineno)
+  FILE_LINES[path] ||= File.read(path).lines
+
+  FILE_LINES[path][lineno - 1]
+end
+
+def extract_variables(ast_node)
+  if ast_node.is_a?(Parser::AST::Node)
+    if ast_node.type == :send &&
+         ast_node.children.size == 2 &&
+         ast_node.children[0].nil?
+      [ast_node.children[1]]
+    else
+      ast_node.children.flat_map do |child|
+        extract_variables(child)
+      end
+    end
+  else
+    []
+  end
 end
 
 def record_execution_trace(levels = 4)
@@ -48,6 +73,24 @@ def record_execution_trace(levels = 4)
       execution_index += 1
 
       last_tracepoint_db_entry = TracePointEntry.create(attributes.merge(previous: last_tracepoint_db_entry, parent: ancestor_stack.last))
+
+      if tp.event == :line
+        begin
+          line = get_file_line(tp.path, tp.lineno)
+          root = Parser::CurrentRuby.parse(line)
+          extract_variables(root).each do |variable|
+            begin
+              value = tp.binding.local_variable_get(variable)
+            rescue NameError
+              nil
+            end
+            object_entry = RubyObject.from_object(value)
+            HasVariableValue.create(last_tracepoint_db_entry, object_entry, variable_name: variable)
+          end
+        rescue Parser::SyntaxError
+          nil
+        end
+      end
 
       if tp.event == :call
         method = tp.self.method(tp.method_id)
