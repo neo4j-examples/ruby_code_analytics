@@ -23,12 +23,19 @@ class TracePointEntry
   has_one :out, :ruby_object, type: :FROM_OBJECT
 
   def description
-    line_description = if path.present?
+    "#{event} #{class_and_method} #{line_description}"
+  end
+
+  def class_and_method
+    "#{defined_class}##{method_id}"
+  end
+
+  def line_description
+    if path.present?
       "#{File.basename(path)}:#{lineno}"
     else
       "(line #{lineno})"
     end
-    "#{event} #{defined_class}##{method_id} #{line_description}"
   end
 
   def file

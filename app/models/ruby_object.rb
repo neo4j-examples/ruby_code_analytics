@@ -9,6 +9,8 @@ class RubyObject
   has_one :out, :ruby_class, type: :IS_A, model_class: :RubyObject
   has_one :out, :ruby_superclass, type: :HAS_SUPERCLASS, model_class: :RubyObject
 
+  has_many :in, :instances, type: :IS_A, model_class: :RubyObject
+
   has_many :in, :return_trace_points, type: :RETURNED, model_class: :TracePointEntry
   has_many :in, :object_trace_points, type: :FROM_OBJECT, model_class: :TracePointEntry
 
