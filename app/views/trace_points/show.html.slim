@@ -14,16 +14,18 @@
       ul.ui.list
         li = link_to_trace_point(child)
 hr
-.ui.grid
-  - if @trace_point.ast_node
+- if @trace_point.ast_node
+  .ui.grid
     .eight.wide.column
       h2 AST Node
     .eight.wide.column = link_to @trace_point.ast_node.description, node_path(@trace_point.ast_node)
 
-hr
+  hr
 
 .ui.grid
   .twelve.wide.column
+    / Hrmm.....
+    - RubyFile
     - if @trace_point.file
       = render partial: 'shared/code_block', locals: {file_path: @trace_point.path, content: @trace_point.file.content, line_definition: @trace_point.lineno, first_line: @trace_point.lineno}
   .four.wide.column
