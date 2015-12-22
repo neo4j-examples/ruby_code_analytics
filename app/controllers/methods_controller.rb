@@ -13,14 +13,14 @@ class MethodsController < ApplicationController
 
     call_trace_points = @trace_points.where(event: ['call', 'c_call'])
 
-    @class_and_method_parent_trace_points = call_trace_points.parent(rel_length: 1..10)
-      .where('result_parent.method_id IS NOT NULL')
-      .where("result_parent.event IN ['call', 'c_call']")
-      .pluck('result_parent.defined_class, result_parent.method_id, collect(result_parent)')
+    @class_and_method_parent_trace_points = call_trace_points.parent(:parent, nil, rel_length: 1..10)
+      .where_not(method_id: nil)
+      .where(event: ['call', 'c_call'])
+      .pluck(:defined_class, :method_id, 'collect(parent)')
 
-    @class_and_method_child_trace_points = call_trace_points.children(rel_length: 1..10)
-      .where('result_children.method_id IS NOT NULL')
-      .where("result_children.event IN ['call', 'c_call']")
-      .pluck('result_children.defined_class, result_children.method_id, collect(result_children)')
+    @class_and_method_child_trace_points = call_trace_points.children(:child, nil, rel_length: 1..10)
+      .where_not(method_id: nil)
+      .where(event: ['call', 'c_call'])
+      .pluck(:defined_class, :method_id, 'collect(child)')
   end
 end

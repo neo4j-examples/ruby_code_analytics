@@ -11,11 +11,11 @@ class TracePointEntry
   property :execution_index, type: Integer
   property :execution_time, type: Integer # microseconds
 
-  has_one :in, :previous, type: :NEXT, model_class: :TracePoint
-  has_one :out, :next, type: :NEXT, model_class: :TracePoint
+  has_one :in, :previous, type: :NEXT, model_class: :TracePointEntry
+  has_one :out, :next, type: :NEXT, model_class: :TracePointEntry
 
-  has_one :out, :parent, type: :HAS_PARENT, model_class: :TracePoint
-  has_many :in, :children, type: :HAS_PARENT, model_class: :TracePoint
+  has_one :out, :parent, type: :HAS_PARENT, model_class: :TracePointEntry
+  has_many :in, :children, type: :HAS_PARENT, model_class: :TracePointEntry
 
   has_one :out, :ast_node, type: :HAS_AST_NODE, model_class: :ASTNode
 
