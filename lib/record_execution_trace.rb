@@ -37,11 +37,27 @@ def extract_variables(ast_node)
   end
 end
 
+def get_trace_point_var(tp, var_name)
+  begin
+    tp.binding.local_variable_get(variable)
+  rescue NameError
+    throw :not_found
+  end
+end
+
 def record_received_arguments(tp, tracepoint_db_entry)
-  method = tp.self.method(tp.method_id)
+  require 'pry'
+  # Can't just use #method method because some objects implement a #method method
+  method = if tp.self.class.instance_method(:method).owner == Kernel
+    tp.self.method(tp.method_id) rescue binding.pry
+  else
+    tp.self.class.instance_method(tp.method_id)
+  end
   parameter_names = method.parameters.map {|_, name| name }
   arguments = parameter_names.each_with_object({}) do |name, arguments|
-    arguments[name] = tp.binding.local_variable_get(name)
+    catch :not_found do
+      arguments[name] = get_trace_point_var(tp, name)
+    end
   end
   arguments.each do |name, object|
     argument_value = RubyObject.from_object(object)
@@ -53,13 +69,11 @@ def record_referenced_variables(tp, tracepoint_db_entry)
   line = get_file_line(tp.path, tp.lineno)
   root = Parser::CurrentRuby.parse(line)
   extract_variables(root).each do |variable|
-    begin
-      value = tp.binding.local_variable_get(variable)
-    rescue NameError
-      nil
+    catch :not_found do
+      value = get_trace_point_var(tp, variable)
+      object_entry = RubyObject.from_object(value)
+      HasVariableValue.create(tracepoint_db_entry, object_entry, variable_name: variable)
     end
-    object_entry = RubyObject.from_object(value)
-    HasVariableValue.create(tracepoint_db_entry, object_entry, variable_name: variable)
   end
 rescue Parser::SyntaxError
   nil

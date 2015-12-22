@@ -1,7 +1,7 @@
 module ApplicationHelper
-  def link_to_trace_point(trace_point)
+  def link_to_trace_point(trace_point, options = {})
     if trace_point
-      link_to trace_point.description, trace_point_path(trace_point)
+      link_to trace_point.description, trace_point_path(trace_point), options
     else
       'None'
     end

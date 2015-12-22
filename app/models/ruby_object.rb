@@ -16,9 +16,10 @@ class RubyObject
   has_many :in, :reference_trace_points, rel_class: :HasVariableValue
 
   def self.from_object(object)
+    object_inspect = object.inspect rescue nil
     attributes = {
       ruby_object_id: object.object_id,
-      ruby_inspect: object.inspect
+      ruby_inspect: object_inspect
     }
     if object.class != Class
       attributes[:ruby_class] = from_object(object.class)

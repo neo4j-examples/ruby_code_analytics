@@ -15,18 +15,14 @@
   .eight.wide.column
     h2 Methods eventually called because of this method (descendants)
 
-    table.ui.table
+    table.ui.table style="table-layout: fixed"
       tr
-        th &nbsp;
-        th Class
         th Method
         th Trace Points
 
       - @class_and_method_child_trace_points.each do |defined_class, method_id, trace_points|
         tr
-          td = link_to 'View', method_path(defined_class: defined_class, method_id: method_id)
-          td = defined_class
-          td = method_id
+          td = link_to "#{defined_class}##{method_id}", method_path(defined_class: defined_class, method_id: method_id)
           td
             .ui.grid
               - trace_points.sort_by(&:execution_index).each_with_index do |trace_point, idx|
@@ -39,19 +35,18 @@
   .eight.wide.column
     h2 Methods which resulted in this method being called (ancestors)
 
-    table.ui.table
+    table.ui.table style="table-layout: fixed"
       tr
-        th &nbsp;
-        th Class
         th Method
         th Trace Points
 
       - @class_and_method_parent_trace_points.each do |defined_class, method_id, trace_points|
         tr
-          td = link_to 'View', method_path(defined_class: defined_class, method_id: method_id)
-          td = defined_class
-          td = method_id
+          td = link_to "#{defined_class}##{method_id}", method_path(defined_class: defined_class, method_id: method_id)
           td
-            ul.ui.list
+            .ui.grid
               - trace_points.sort_by(&:execution_index).each do |trace_point|
-                li = link_to_trace_point trace_point
+                .eight.wide.column = link_to_trace_point trace_point
+                .eight.wide.column
+                  = trace_point.return_point.execution_time / 1000.0
+                  |  ms

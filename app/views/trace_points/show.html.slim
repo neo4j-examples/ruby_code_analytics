@@ -1,18 +1,51 @@
+coffee:
+  $(document).ready ->
+    return if window.loaded_key_browsing is true
+
+    window.loaded_key_browsing = true    
+
+    current_child = null
+
+    $(document).keydown (e) ->
+      if e.altKey
+        switch e.which
+          when 37 then link_el = $('#left-key a')[0]
+          when 38 then link_el = $('#up-key a')[0]
+          when 39 then link_el = $('#right-key a')[0]
+          else
+            return
+
+        $(link_el).transition('pulse')
+        link_el.click()
+
+        e.preventDefault()
+
+scss:
+  div#down-key {
+    height: 135px;
+    overflow-y: auto;
+    background-color: #EEEEEE;
+    padding: 1em;
+    margin-bottom: 1em;
+  }
+
+p Hold down "alt" + left/right/up arrows keys to browse between trace points
+
 .ui.grid
-  .eight.wide.column
+  .eight.wide.column#left-key
     h2 Previous
     = link_to_trace_point(@trace_point.previous)
-  .eight.wide.column
+  .eight.wide.column#up-key
     h2 Parent
     = link_to_trace_point(@trace_point.parent)
-  .eight.wide.column
+  .eight.wide.column#right-key
     h2 Next
     = link_to_trace_point(@trace_point.next)
-  .eight.wide.column
+  .eight.wide.column#down-key
     h2 Children
-    - @trace_point.children.sort_by(&:execution_index).each do |child|
-      ul.ui.list
-        li = link_to_trace_point(child)
+    ul.ui.list
+      - @trace_point.children.sort_by(&:execution_index).each do |child|
+        li = link_to_trace_point(child, class: 'item')
 hr
 - if @trace_point.ast_node
   .ui.grid
@@ -30,7 +63,7 @@ hr
       = render partial: 'shared/code_block', locals: {file_path: @trace_point.path, content: @trace_point.file.content, line_definition: @trace_point.lineno, first_line: @trace_point.lineno}
   .four.wide.column
     = render partial: 'shared/object_attribute_grid', locals: {object: @trace_point, columns: %w(event defined_class method_id execution_index)}
-    - execution_time = @trace_point.execution_time || @trace_point.return_point.execution_time
+    - execution_time = @trace_point.execution_time || (@trace_point.return_point && @trace_point.return_point.execution_time)
     - if execution_time
       .ui.grid
         .eight.wide.column

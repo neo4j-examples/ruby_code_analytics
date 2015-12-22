@@ -3,6 +3,7 @@
 #= require turbolinks
 #= require prism
 ##= require semantic-ui/dropdown
+##= require semantic-ui/transition
 
 
 ready = ->

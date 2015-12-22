@@ -4,7 +4,11 @@ require 'parser/current'
 
 def record_execution(&block)
   record_execution_trace(10) do
-    block.call
+    begin
+      block.call
+    rescue Exception => e
+      nil
+    end
   end
 
   file_paths = TracePointEntry.as(:tp).where_not(path: nil).pluck('DISTINCT tp.path')
