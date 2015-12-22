@@ -92,9 +92,10 @@ def record_execution_trace(levels = 4)
       run_time_stack[-1] += last_run_time if run_time_stack[-1] && last_run_time
     end
 
+    associated_call_trace_point = nil
     if [:return, :c_return].include?(tp.event) && indent.nonzero?
       indent -= 1
-      ancestor_stack.pop
+      associated_call_trace_point = ancestor_stack.pop
     elsif [:call, :c_call].include?(tp.event)
       indent += 1
     end
@@ -111,6 +112,8 @@ def record_execution_trace(levels = 4)
     attributes[:ruby_object] = RubyObject.from_object(tp.self) unless tp == tp.self
     
     last_tracepoint_db_entry = TracePointEntry.create(attributes.merge(previous: last_tracepoint_db_entry, parent: ancestor_stack.last))
+
+    last_tracepoint_db_entry.call_point = associated_call_trace_point if associated_call_trace_point
 
     record_referenced_variables(tp, last_tracepoint_db_entry) if tp.event == :line
     record_received_arguments(tp, last_tracepoint_db_entry) if tp.event == :call

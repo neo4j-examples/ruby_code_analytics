@@ -28,9 +28,12 @@
           td = defined_class
           td = method_id
           td
-            ul.ui.list
-              - trace_points.sort_by(&:execution_index).each do |trace_point|
-                li = link_to_trace_point trace_point
+            .ui.grid
+              - trace_points.sort_by(&:execution_index).each_with_index do |trace_point, idx|
+                .eight.wide.column = link_to_trace_point trace_point
+                .eight.wide.column
+                  = trace_point.return_point.execution_time / 1000.0
+                  |  ms
 
 
   .eight.wide.column

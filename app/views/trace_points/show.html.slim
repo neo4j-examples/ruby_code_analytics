@@ -30,12 +30,14 @@ hr
       = render partial: 'shared/code_block', locals: {file_path: @trace_point.path, content: @trace_point.file.content, line_definition: @trace_point.lineno, first_line: @trace_point.lineno}
   .four.wide.column
     = render partial: 'shared/object_attribute_grid', locals: {object: @trace_point, columns: %w(event defined_class method_id execution_index)}
-    .ui.grid
-      .eight.wide.column
-        strong Execution time
-      .eight.wide.column
-        = @trace_point.execution_time
-        |  microseconds
+    - execution_time = @trace_point.execution_time || @trace_point.return_point.execution_time
+    - if execution_time
+      .ui.grid
+        .eight.wide.column
+          strong Execution time
+        .eight.wide.column
+          = execution_time / 1000.0
+          |  ms
 
     - if @trace_point.arguments.present?
       h2 Arguments

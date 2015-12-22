@@ -23,6 +23,9 @@ class TracePointEntry
   has_many :out, :arguments, rel_class: :ReceivedArgument
   has_one :out, :ruby_object, type: :FROM_OBJECT
 
+  has_one :out, :call_point, type: :STARTED_AT, model_class: :TracePointEntry
+  has_one :in, :return_point, type: :STARTED_AT, model_class: :TracePointEntry
+
   has_many :out, :variable_values, rel_class: :HasVariableValue
 
   def description
