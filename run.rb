@@ -1,5 +1,4 @@
-require 'pathname'
-require 'record_execution'
+require 'neolytics'
 
 puts 'Deleting ASTNodes from the database...'
 ASTNode.delete_all
@@ -10,36 +9,28 @@ RubyObject.delete_all
 puts 'Deleting RubyFiles from the database...'
 RubyFile.delete_all
 
+require 'nokogiri'
+
 puts 'Recording execution...'
-record_execution do
-  def add_random(i, max = 50)
-    i + rand(max)
+neo4j_session = Neo4j::Session.current
+Neolytics.record_execution(neo4j_session) do
+  def foo
+    "returned string"
   end
 
-  class Foo
-    def bar
-      'baz'
-    end
-
-    def self.class_bar
-      a = 'fizz'
-
-      a + Fizz.buzz + add_random(4).to_s
-    end
+  def bar(arg)
+    puts arg
   end
+  puts 'inside record_execution block'
+  #doc = Nokogiri::HTML(open('http://stackoverflow.com/').read)
 
-  class Fizz
-    def self.buzz
-      'buzz'
+  #doc.xpath('//meta')
+
+  def blah
+    if 1 == 2 and true != false
+      bar
     end
   end
 
-  begin
-    raise "Test error"
-  rescue => e
-    puts e.message
-  end
-
-  Foo.class_bar
-  Foo.new.bar
+  bar(foo)
 end

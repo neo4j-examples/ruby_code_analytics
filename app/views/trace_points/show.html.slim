@@ -62,7 +62,7 @@ hr
     - if @trace_point.file
       = render partial: 'shared/code_block', locals: {file_path: @trace_point.path, content: @trace_point.file.content, line_definition: @trace_point.lineno, first_line: @trace_point.lineno}
   .four.wide.column
-    = render partial: 'shared/object_attribute_grid', locals: {object: @trace_point, columns: %w(event defined_class method_id execution_index)}
+    = render partial: 'shared/object_attribute_grid', locals: {object: @trace_point, columns: %w(event defined_class method_id lineno execution_index)}
     - execution_time = @trace_point.execution_time || (@trace_point.return_point && @trace_point.return_point.execution_time)
     - if execution_time
       .ui.grid
@@ -98,7 +98,17 @@ hr
               - if object.ruby_class
                 |  (#{link_to_object object.ruby_class})
       hr
- 
+
+    - if @trace_point.object_references.present?
+      h2 Object references
+      .ui.grid
+        - @trace_point.object_references.each do |object|
+          .sixteen.wide.column
+            - if object
+              = link_to_object object
+              - if object.ruby_class
+                |  (#{link_to_object object.ruby_class})
+      hr
 
     - if @trace_point.return_value
       h2 Return Value

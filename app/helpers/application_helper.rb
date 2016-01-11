@@ -7,7 +7,7 @@ module ApplicationHelper
     end
   end
 
-  def link_to_object(object)
-    link_to object.ruby_inspect, object_path(object.ruby_object_id)
+  def link_to_object(object, options = {})
+    link_to object.ruby_inspect, object_path(object.ruby_object_id), options
   end
 end

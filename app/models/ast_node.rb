@@ -37,7 +37,7 @@ class ASTNode
   end
 
   def file
-    RubyFile.find_by(file_path: file_path) if file_path
+    RubyFile.find_by(path: file_path) if file_path
   end
 
   def self.find_method(class_name, method_name)

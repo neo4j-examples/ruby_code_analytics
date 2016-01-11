@@ -2,7 +2,21 @@ h1
   = @object.ruby_inspect
   |  (ID# #{@object.ruby_object_id})
 
+.ui.huge.breadcrumb
+  - @object.class_ancestry.each_with_index do |ancestor, idx|
+    - unless idx.zero?
+      i.right.chevron.icon.divider
+    = link_to_object ancestor, class: 'section'
+
+hr
+
 = render partial: 'shared/object_attribute_grid', locals: {object: @object}
+
+.ui.grid
+  - @object.instance_variable_objects.each_with_rel do |value, rel|
+    .eight.wide.column
+      strong = rel.props[:variable]
+    .eight.wide.column = link_to_object value
 
 - if (instances = @object.instances.to_a).size > 0
   h2 Instances

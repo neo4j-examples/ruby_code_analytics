@@ -1,4 +1,9 @@
+require 'neolytics'
+neo4j_session = Neo4j::Session.open(:server_db, 'http://neo4j:neo5j@localhost:9191')
+Neolytics.record_execution(neo4j_session) do
+
 require File.expand_path('../boot', __FILE__)
+
 
 require 'rails'
 require 'logger'
@@ -31,4 +36,5 @@ module RubyCodeAnalytics
     # config.i18n.load_path += Dir[Rails.root.join('my', 'locales', '*.{rb,yml}').to_s]
     # config.i18n.default_locale = :de
   end
+end
 end

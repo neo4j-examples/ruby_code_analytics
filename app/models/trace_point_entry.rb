@@ -28,6 +28,8 @@ class TracePointEntry
 
   has_many :out, :variable_values, rel_class: :HasVariableValue
 
+  has_many :out, :object_references, type: :REFERENCES_OBJECT, model_class: :RubyObject
+
   def description
     "#{event} #{class_and_method} #{line_description}"
   end
@@ -45,7 +47,7 @@ class TracePointEntry
   end
 
   def file
-    RubyFile.find_by(file_path: path) if path
+    RubyFile.find_by(path: path) if path
   end
 end
 
