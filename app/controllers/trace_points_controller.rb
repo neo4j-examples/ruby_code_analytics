@@ -24,6 +24,7 @@ class TracePointsController < ApplicationController
     end
 
     associations_by_rel_type = @trace_point.query_as(:tp)
+      .break
       .optional_match('(tp)-[rel]-(other_node)')
       .pluck('type(rel), startNode(rel) = tp AS outbound, collect(other_node)').each do |rel_type, outbound, other_nodes|
 
