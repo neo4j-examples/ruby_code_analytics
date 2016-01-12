@@ -34,24 +34,24 @@ p Hold down "alt" + left/right/up arrows keys to browse between trace points
 .ui.grid
   .eight.wide.column#left-key
     h2 Previous
-    = link_to_trace_point(@trace_point.previous)
+    = link_to_trace_point(@previous)
   .eight.wide.column#up-key
     h2 Parent
-    = link_to_trace_point(@trace_point.parent)
+    = link_to_trace_point(@parent)
   .eight.wide.column#right-key
     h2 Next
-    = link_to_trace_point(@trace_point.next)
+    = link_to_trace_point(@next)
   .eight.wide.column#down-key
     h2 Children
     ul.ui.list
-      - @trace_point.children.sort_by(&:execution_index).each do |child|
+      - @children.sort_by(&:execution_index).each do |child|
         li = link_to_trace_point(child, class: 'item')
 hr
-- if @trace_point.ast_node
+- if @ast_node
   .ui.grid
     .eight.wide.column
       h2 AST Node
-    .eight.wide.column = link_to @trace_point.ast_node.description, node_path(@trace_point.ast_node)
+    .eight.wide.column = link_to @ast_node.description, node_path(@ast_node)
 
   hr
 
@@ -59,8 +59,8 @@ hr
   .twelve.wide.column
     / Hrmm.....
     - RubyFile
-    - if @trace_point.file
-      = render partial: 'shared/code_block', locals: {file_path: @trace_point.path, content: @trace_point.file.content, line_definition: @trace_point.lineno, first_line: @trace_point.lineno}
+    - if @file
+      = render partial: 'shared/code_block', locals: {file_path: @trace_point.path, content: @file.content, line_definition: @trace_point.lineno, first_line: @trace_point.lineno}
   .four.wide.column
     = render partial: 'shared/object_attribute_grid', locals: {object: @trace_point, columns: %w(event defined_class method_id lineno execution_index)}
     - execution_time = @trace_point.execution_time || (@trace_point.return_point && @trace_point.return_point.execution_time)
@@ -72,52 +72,52 @@ hr
           = execution_time / 1000.0
           |  ms
 
-    - if @trace_point.arguments.present?
+    - if @arguments.present?
       h2 Arguments
       .ui.grid
-        - @trace_point.arguments(:obj, :rel).pluck(:obj, :rel).each do |object, rel|
+        - @trace_point.arguments(:obj, :rel).ruby_class(:ruby_class).pluck(:obj, :rel, :ruby_class).each do |object, rel, ruby_class|
           .eight.wide.column
             strong = rel.argument_name
           .eight.wide.column
             - if object
               = link_to_object object
-              - if object.ruby_class
-                |  (#{link_to_object object.ruby_class})
+              - if ruby_class
+                |  (#{link_to_object ruby_class})
 
       hr
 
     - if @trace_point.variable_values.present?
       h2 Variable values
       .ui.grid
-        - @trace_point.variable_values(:obj, :rel).pluck(:obj, :rel).each do |object, rel|
+        - @trace_point.variable_values(:obj, :rel).ruby_class(:ruby_class).pluck(:obj, :rel, :ruby_class).each do |object, rel, ruby_class|
           .eight.wide.column
             strong = rel.variable_name
           .eight.wide.column
             - if object
               = link_to_object object
-              - if object.ruby_class
-                |  (#{link_to_object object.ruby_class})
+              - if ruby_class
+                |  (#{link_to_object ruby_class})
       hr
 
     - if @trace_point.object_references.present?
       h2 Object references
       .ui.grid
-        - @trace_point.object_references.each do |object|
+        - @trace_point.object_references(:reference).ruby_class(:ruby_class).pluck(:reference, :ruby_class).each do |object, ruby_class|
           .sixteen.wide.column
             - if object
               = link_to_object object
-              - if object.ruby_class
-                |  (#{link_to_object object.ruby_class})
+              - if ruby_class
+                |  (#{link_to_object ruby_class})
       hr
 
-    - if @trace_point.return_value
+    - if @return_value
       h2 Return Value
       = render partial: 'shared/object_attribute_grid', locals: {object: @trace_point.return_value}
-      - if @trace_point.return_value.ruby_class
+      - if @return_value.ruby_class
         .ui.grid
           .eight.wide.column
             strong Class
-          .eight.wide.column = @trace_point.return_value.ruby_class.ruby_inspect
+          .eight.wide.column = @return_value.ruby_class.ruby_inspect
 
     - if ruby_object = @trace_point.ruby_object
       h2 Ruby Object
